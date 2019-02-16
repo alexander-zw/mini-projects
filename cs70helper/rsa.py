@@ -3,17 +3,19 @@
 # Author: Alexander Zhao Wu
 import sympy as sp
 
+
 # Provides a helper function
 class ModExp:
     # input x should be < n
     # >>> ModExp.power_mod(2, 6, 7)
     # 1
     def power_mod(x, pow, n):
-        if (pow == 0):
+        if pow == 0:
             return 1
         power_half = ModExp.power_mod(x, pow // 2, n)
         square = (power_half * power_half) % n
         return square if pow % 2 == 0 else (square * x) % n
+
 
 class RSA:
     prime_min = 1e5
@@ -21,14 +23,14 @@ class RSA:
 
     # generates N, e (if needed), and d
     def __init__(self, p=None, q=None, e=None):
-        if p == None:
+        if not p:
             p = sp.randprime(RSA.prime_min, RSA.prime_max)
-        if q == None:
+        if not q:
             q = sp.randprime(RSA.prime_min, RSA.prime_max)
         self._p = p # _p and _q only used for debugging
         self._q = q
         self.N = p * q
-        if e == None:
+        if not e:
             self._find_e_and_d()
         else: # find d from given e
             self.e = e
