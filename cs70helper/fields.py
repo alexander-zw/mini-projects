@@ -1,32 +1,39 @@
 # contains implementation of several fields
 # Author: Alexander Zhao Wu
 
+from abc import ABC, abstractmethod
 import sympy as sp
 
-class Field:
+class Field(ABC):
     @property
+    @abstractmethod
     def zero(self):
         pass
 
     @property
+    @abstractmethod
     def id(self):
         pass
 
+    @abstractmethod
     def __add__(self, other):
         pass
 
     def __sub__(self, other):
         return self + (-other)
 
+    @abstractmethod
     def __mul__(self, other):
         pass
 
     def __truediv__(self, other):
         return self * other.inv()
 
+    @abstractmethod
     def __neg__(self):
         pass
 
+    @abstractmethod
     def inv(self):
         pass
 
@@ -101,6 +108,7 @@ class PrimeMod(Field):
 
 # an algebraic rational expression
 # contains variables and constants combined with +-*/
+# Unfortunately NOT implemented yet
 class Expr(Field):
     def __init__(self, r):
         self.val = r

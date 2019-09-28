@@ -1,7 +1,7 @@
 import os
 
 
-filepath = "/Users/AlexanderWu/Downloads/Oct23/"
+filepath = "/Users/AlexanderWu/Downloads/"
 
 letters = ["A", "B", "C", "D", "E", "F"]
 
@@ -89,11 +89,24 @@ def add_part():
 
 
 # e.g. "30 A2.jpg" -> "06 A2.jpg"
+# def change_counter():
+#     for filename in os.listdir(filepath):
+#         try:
+#             count = int(filename[:2])
+#             new_name = str(count + 24).zfill(2) + filename[2:]
+#             os.rename(filepath + filename, filepath + new_name)
+#             print(filename, "renamed into", new_name)
+#         except ValueError:
+#             print("Skipped:", filename)
+#             continue
+
+
+# e.g. "7 A2.jpg" -> "06.jpg"
 def change_counter():
     for filename in os.listdir(filepath):
         try:
-            count = int(filename[:2])
-            new_name = str(count + 24).zfill(2) + filename[2:]
+            count = int(filename[:2].strip())
+            new_name = str(count - 1).zfill(2) + ".jpg"
             os.rename(filepath + filename, filepath + new_name)
             print(filename, "renamed into", new_name)
         except ValueError:
@@ -101,4 +114,4 @@ def change_counter():
             continue
 
 
-int_to_counter_and_letter_num()
+change_counter()

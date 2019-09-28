@@ -24,3 +24,6 @@ hs_err_pid*
 
 # MacOS
 .DS_Store
+
+# files that should not be shared publicly
+interviews/

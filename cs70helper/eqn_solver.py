@@ -25,18 +25,23 @@ class Solver:
     # returns a vector of solutions (assuning A has one more column than row)
     def solve(A):
         field = A[0][0] # used for accessing zero and id
+        # getting to (non-reduced) row-echelon form
         for r in range(len(A)):
+            # get a nonzero pivot
             for next_row in range(r + 1, len(A)):
                 if A[r][r] == field.zero:
                     Solver.row_swap(A, r, next_row)
             if A[r][r] == field.zero: # all zeros in the column
                 raise ValueError("Singular matrix, cannot solve")
+            # scale to 1
             if A[r][r] != field.id:
                 Solver.row_mul(A, r, A[r][r].inv())
+            # subtract out pivots below
             for lower_row in range(r + 1, len(A)):
                 Solver.row_add_scaled(A, r, lower_row, -A[lower_row][r])
 
-        for r in range(len(A) - 1, 0, -1): # eliminating upper triangle
+        # eliminating upper triangle
+        for r in range(len(A) - 1, 0, -1):
             for upper_row in range(r - 1, -1, -1):
                 Solver.row_add_scaled(A, r, upper_row, -A[upper_row][r])
 
