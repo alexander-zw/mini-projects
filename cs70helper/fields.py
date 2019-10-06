@@ -37,6 +37,19 @@ class Field(ABC):
     def inv(self):
         pass
 
+    # exponent is a nonegative integer, not a member of the field
+    def __pow__(self, exponent):
+        if exponent == 0:
+            return self.id
+        power_half = self**(exponent // 2)
+        square = power_half * power_half
+        return square if exponent % 2 == 0 else square * self
+
+    def factorial(self):
+        if self == self.id or self == self.zero:
+            return self.id
+        return self * (self - self.id).factorial()
+
 class Real(Field):
     def __init__(self, r):
         self.val = r
