@@ -25,5 +25,8 @@ hs_err_pid*
 # MacOS
 .DS_Store
 
+# Code editor files
+.idea
+
 # files that should not be shared publicly
 interviews/
