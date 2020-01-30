@@ -119,6 +119,64 @@ class PrimeMod(Field):
     def __str__(self):
         return str(self.val)
 
+class MontPrimeMod(PrimeMod):
+    """ Uses Montgomery multiplication """
+    def __init__(self, mont_val, modulus, pow_of_two, R):
+        self.mod = modulus
+        self.mont_val = mont_val
+        self.pow_of_two = pow_of_two
+        self.R = R
+
+    @classmethod
+    def from_value(cls, value, modulus):
+        n = sp.ceiling(sp.log(modulus) / sp.log(2))
+        pow_of_two = 2**n
+        R = modulus - sp.mod_inverse(modulus, pow_of_two % modulus)
+        mont_val = (value * pow_of_two) % modulus
+        return cls(mont_val, modulus, pow_of_two, R)
+
+    @property
+    def value(self):
+        return (self * MontPrimeMod(1, self.mod, self.pow_of_two, self.R)).mont_val
+
+    @property
+    def zero(self):
+        return MontPrimeMod.from_value(0, self.mod)
+
+    @property
+    def id(self):
+        return MontPrimeMod.from_value(1, self.mod)
+
+    def __add__(self, other):
+        return MontPrimeMod((self.mont_val + other.mont_val) % self.mod, self.mod, self.pow_of_two, self.R)
+
+    # WARNING: currently buggy :<
+    def __mul__(self, other):
+        """ Montgomery multiplication """
+        x = self.mont_val * other.mont_val
+        s = ((x % self.pow_of_two) * self.R) % self.pow_of_two
+        t = (x + s * self.mod) // self.pow_of_two
+        new_mont = t if t < self.mod else t - self.mod
+        return MontPrimeMod(new_mont, self.mod, self.pow_of_two, self.R)
+
+    # just keeps it negative to save time
+    def __neg__(self):
+        return self.zero - self
+
+    def inv(self):
+        return MontPrimeMod.from_value(sp.mod_inverse(self.value, self.mod), self.mod)
+
+    # should only be used to compare same modulus numbers
+    def __eq__(self, other):
+        return self.mont_val == other.mont_val
+
+    def __repr__(self):
+        return "MontPrimeMod(%d, %d, %d, %d)" % (self.mont_val, self.mod, self.pow_of_two, self.R)
+
+    def __str__(self):
+        return "%d mod %d, mont_val=%d" % (self.value, self.mod, self.mont_val)
+
+
 # an algebraic rational expression
 # contains variables and constants combined with +-*/
 # Unfortunately NOT implemented yet
