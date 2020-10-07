@@ -1,5 +1,9 @@
-import os
+"""
+Functions that rename files from some alphanumeric counter to a new alphanumeric counter.
+I wrote this for a very specific use case, so it may not be widely applicable.
+"""
 
+import os
 
 filepath = "/Users/AlexanderWu/Downloads/"
 
@@ -114,4 +118,5 @@ def change_counter():
             continue
 
 
-change_counter()
+if __name__ == "__main__":
+    change_counter()
