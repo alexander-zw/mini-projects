@@ -4,11 +4,15 @@ import sympy as sp
 from rsa import ModExp
 
 class Polynomial:
-    def __init__(self, coeffs, n):
+    n = None
+    verbose = False
+
+    def __init__(self, coeffs, n=None):
         # beginning at 0 degree term to d+1 degree term
         # zero polynomial can be represented as empty list
         self.coeffs = coeffs
-        self.n = n
+        if n:
+            self.n = n
 
     def of(self, x):
         y = 0
@@ -23,7 +27,7 @@ class Polynomial:
             return 0
         return self.coeffs[degree]
 
-    def add(self, other):
+    def __add__(self, other):
         if self.n != other.n:
             raise ValueError(
                     "Cannot add polynomials of different finite fields")
@@ -46,7 +50,7 @@ class Polynomial:
         return Polynomial(scaled_coeffs, self.n)
 
 
-    def mul(self, other):
+    def __mul__(self, other):
         if self.n != other.n:
             raise ValueError(
                     "Cannot multiply polynomials of different finite fields")
@@ -60,6 +64,12 @@ class Polynomial:
                                         % self.n
                 prod_coeffs[i + j] %= self.n
         return Polynomial(prod_coeffs, self.n)
+
+    def __eq__(self, other):
+        return self.n == other.n and self.coeffs == other.coeffs
+    
+    def __hash__(self):
+        return hash(self.n) * 31 + hash(self.coeffs)
 
     # degree determined by number of points
     # a point is a 2-tuple
@@ -94,10 +104,10 @@ class Polynomial:
         return "Polynomial({0}, {1})".format(self.coeffs, self.n)
 
     def _term_str(degree, coeff):
-        if degree == 0:
-            return str(coeff)
         if coeff == 0:
             return ""
+        if degree == 0:
+            return str(coeff)
         if degree == 1:
             string = "x + "
         else:
@@ -107,9 +117,12 @@ class Polynomial:
         return string.format(coeff, degree)
 
     def __str__(self):
-        string = "Polynomial: "
+        string = "Polynomial: " if self.verbose else ""
         if not self.coeffs: # zero polynomial
             return string + "0"
         for i in range(self.degree, -1, -1):
             string += Polynomial._term_str(i, self.coeffs[i])
-        return string + " (mod {0})".format(self.n)
+        if string[-3:] == " + ":
+            string = string[:-3]
+        mod_str = " (mod {0})".format(self.n) if self.verbose else ""
+        return string + mod_str
