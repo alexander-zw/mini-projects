@@ -9,16 +9,19 @@ from PIL import Image
 import whatimage
 import io
 import os
+import re
 
 # Renames files to batch_name + counter (starting with 0), padded with zeros to get num_digits.
-def rename_to_counter(filepath: str, batch_name: str, num_digits=2):
-    counter = 0
+def rename_to_counter(filepath: str, batch_name: str, name_match=".*", start_count=0, num_digits=2):
     for name in os.listdir(filepath):
-        _, extension = os.path.splitext(name)
-        new_name = batch_name + str(counter).zfill(num_digits) + extension
-        os.rename(os.path.join(filepath, name), os.path.join(filepath, new_name))
-        print(name, "renamed into", new_name)
-        counter += 1
+        if re.fullmatch(name_match, name):
+            _, extension = os.path.splitext(name)
+            new_name = batch_name + str(start_count).zfill(num_digits) + extension
+            os.rename(os.path.join(filepath, name), os.path.join(filepath, new_name))
+            print(name, "renamed into", new_name)
+            start_count += 1
+        else:
+            print(name, "skipped")
 
 def convert_all_heic_to_png(path_orig: str, path_dest: str):
     for name in os.listdir(path_orig):
@@ -42,5 +45,5 @@ def convert_heic_to_png(filename: str, new_path: str):
 # This code renames heic images_heic in the `images` folder into `phone_calib_xx.heic`
 # then copies them then into `images/phone_calib_xx.png`.
 if __name__ == "__main__":
-    rename_to_counter("images_heic", "phone_calib_")
-    convert_all_heic_to_png("images_heic", "images")
+    rename_to_counter("pose_heic", "phone_pose_", name_match=".+\.HEIC", start_count=7)
+    convert_all_heic_to_png("pose_heic", "pose")
