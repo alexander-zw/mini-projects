@@ -9,6 +9,9 @@ files in bulk.
 `miscellaneous_java` contains various projects in Java. They were grouped
 into one folder because Java requires specific file structures.
 
+`notebooks` contains iPython notebooks that are mostly demos that I find
+useful.
+
 `teaching` contains some code I wrote while teaching computer science.
 
 Note: The folder `cs70helper` has been moved to its own repository,
