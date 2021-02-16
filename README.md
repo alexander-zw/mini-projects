@@ -10,7 +10,7 @@ files in bulk.
 into one folder because Java requires specific file structures.
 
 `notebooks` contains iPython notebooks that are mostly demos that I find
-useful.
+useful. See the [specific readme](notebooks/README.md) for details.
 
 `teaching` contains some code I wrote while teaching computer science.
 
