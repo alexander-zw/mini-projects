@@ -5,13 +5,11 @@ I wrote this for a very specific use case, so it may not be widely applicable.
 
 import os
 
-filepath = "/Users/AlexanderWu/Downloads/"
+filepath = "./data/explode_frames/"
 
 letters = ["A", "B", "C", "D", "E", "F"]
 
-letter_to_num = {
-    "A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5
-}
+letter_to_num = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5}
 
 
 # e.g. 06.jpg -> "06 A2.jpg"
@@ -23,8 +21,13 @@ def int_to_counter_and_letter_num():
             continue
 
         letter = letters[file_num % len(letters)]
-        new_name = str(file_num).zfill(2) + " " + letter +\
-                   str(file_num // len(letters) + 1) + ".jpg"
+        new_name = (
+            str(file_num).zfill(2)
+            + " "
+            + letter
+            + str(file_num // len(letters) + 1)
+            + ".jpg"
+        )
         os.rename(filepath + filename, filepath + new_name)
         print(filename, "renamed into", new_name)
 
@@ -60,7 +63,7 @@ def letter_num_to_int():
             print("Skipped:", filename)
 
 
-# e.g. 1.jpg -> 02.jpg
+# e.g. 1.png -> 01.png
 def change_num():
     for filename in os.listdir(filepath):
         try:
@@ -69,7 +72,7 @@ def change_num():
             print("Skipped:", filename)
             continue
 
-        new_name = str(num + 1).zfill(2) + ".jpg"
+        new_name = str(num).zfill(2) + ".png"
         os.rename(filepath + filename, filepath + new_name)
         print(filename, "renamed into", new_name)
 
@@ -119,4 +122,4 @@ def change_counter():
 
 
 if __name__ == "__main__":
-    change_counter()
+    change_num()
