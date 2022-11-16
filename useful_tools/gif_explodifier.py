@@ -1,40 +1,15 @@
 """ Run with -h to see help text. """
 
 import argparse
+from os import PathLike
+import os.path as path
+
 from PIL import Image
 
-parser = argparse.ArgumentParser(
-    prog="GIF Explodifier",
-    description="""
-Script that creates an explodified GIF. Takes in a static image, and creates a GIF where the input
-image flashes and explodes.
 
-The explodified GIF will have transparent background for the explosion and preserve the transparent
-background of the input.""",
-    epilog="""
-
-I have no idea why, but for some images you'll get the error
-
-"TypeError: color must be int or tuple"
-
-The fix I found was to open the image in Apple Preview, then run cmd-A, cmd-K, cmd-S (crop all and
-save). Then the error will go away. I think it has something to do with the color mode the image is
-stored in?
-
-The explode source data is located in data/explode_frames/. If you download this script you need to
-copy that folder also for it to work.
-""",
-)
-parser.add_argument(
-    "input_image",
-    type=str,
-    help="The input image to explodify; a transparent background PNG is preferred",
-)
-parser.add_argument(
-    "output_gif",
-    type=str,
-    help="The path to output the explodified GIF",
-)
+def join_paths(path1: PathLike, path2: PathLike):
+    """Returns the normalized concatenation of the paths."""
+    return path.normpath(path.join(path1, path2))
 
 
 def gen_frame(im):
@@ -60,8 +35,12 @@ def gen_frame(im):
     return im
 
 
+def get_explode_frame_filename(index: int):
+    return join_paths(path.dirname(__file__), f"data/explode_frames/{index:02}.png")
+
+
 def get_explode_frames():
-    return [(Image.open(f"./data/explode_frames/{i:02}.png"), 100) for i in range(22)]
+    return [(Image.open(get_explode_frame_filename(i)), 100) for i in range(22)]
 
 
 def crop_square_and_resample_25x25(im):
@@ -91,6 +70,40 @@ def save_gif(path: str, frames: list[tuple[any, int]]):
     )
 
 
+parser = argparse.ArgumentParser(
+    prog="GIF Explodifier",
+    description="""
+Script that creates an explodified GIF. Takes in a static image, and creates a GIF where the input
+image flashes and explodes.
+
+The explodified GIF will have transparent background for the explosion and preserve the transparent
+background of the input.""",
+    epilog="""
+I have no idea why, but for some images you'll get the error
+
+"TypeError: color must be int or tuple"
+
+The fix I found was to open the image in Apple Preview, then run cmd-A, cmd-K, cmd-S (crop all and
+save). Then the error will go away. I think it has something to do with the color mode the image is
+stored in?
+
+The explode source data is located in data/explode_frames/. If you download this script you need to
+copy that folder also for it to work.
+
+This script was tested with pillow-9.3.0. It may not work as well with other versions.
+""",
+)
+parser.add_argument(
+    "input_image",
+    type=str,
+    help="The input image to explodify; a transparent background PNG is preferred",
+)
+parser.add_argument(
+    "output_gif",
+    type=str,
+    help="The path to output the explodified GIF",
+)
+
 IMAGE_SIZE = (25, 25)
 # fmt: off
 GIF_FLASH_DELAYS = [
@@ -104,7 +117,6 @@ if __name__ == "__main__":
     # input_frame = gen_frame(Image.open(args.input_image))
     input_frame = crop_square_and_resample_25x25(Image.open(args.input_image))
     input_frame = gen_frame(input_frame)
-    # input_frame.save(args.output_gif + ".png")
     explode_frames = get_explode_frames()
     # For some reason creating a blank image with Image.new doesn't work, so using a frame from the explode GIF.
     blank_frame = explode_frames[-1][0]
