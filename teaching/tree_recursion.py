@@ -10,3 +10,6 @@ def deep_sum(lst):
             sum += deep_sum(e)
         return sum
         # return reduce(lambda x, y: deep_sum(x) + deep_sum(y), lst, 0)
+
+# Example
+print(deep_sum([[1, 2], 3, [[4, [5]]], [[[[[[6]]]]]]]))
