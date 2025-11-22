@@ -17,27 +17,36 @@
  * 6. Paste the JSON output into an LLM chat to ask for specific kinds of meals (low calorie, low sodium, etc).
  */
 
-// Extract meals from the current page
-function extractMealsFromPage() {
-  // Every menu item has a .card-body with an h4 and a .card-text
-  const bodies = document.querySelectorAll(".card-body");
+// Helper function to extract meals from a root element
+function extractMealsFromRoot(root) {
+  // Try to find meal cards - works with both full class names and cleaned HTML
+  let cards = root.querySelectorAll(".meal-card");
 
-  const meals = Array.from(bodies)
-    .map((body) => {
+  // Fallback: if no meal-card elements found, look for any div with menu-item id
+  if (cards.length === 0) {
+    cards = root.querySelectorAll("[id^='menu-item-']");
+  }
+
+  const meals = Array.from(cards)
+    .map((card) => {
       const nameEl =
-        body.querySelector("h4 span span") ||
-        body.querySelector("h4 span") ||
-        body.querySelector("h4");
+        card.querySelector("h4 span span") ||
+        card.querySelector("h4 span") ||
+        card.querySelector("h4");
 
       const descEl =
-        body.querySelector(".card-text span span") ||
-        body.querySelector(".card-text span") ||
-        body.querySelector(".card-text");
+        card.querySelector(".card-text span span") ||
+        card.querySelector(".card-text span") ||
+        card.querySelector(".card-text");
 
       const name = nameEl ? nameEl.textContent.trim() : "";
       const description = descEl ? descEl.textContent.trim() : "";
 
-      return { name, description };
+      // Extract dietary tags from icon-label spans
+      const tagElements = card.querySelectorAll(".icon-label");
+      const tags = Array.from(tagElements).map((el) => el.textContent.trim());
+
+      return { name, description, tags };
     })
     .filter((m) => m.name && m.description);
 
@@ -46,33 +55,17 @@ function extractMealsFromPage() {
   return meals;
 }
 
-// Legacy function - extracts meals from an HTML string (if you already copied the HTML)
+// METHOD 1: Extract meals from the current page
+function extractMealsFromPage() {
+  const meals = extractMealsFromRoot(document);
+  return meals;
+}
+
+// METHOD 2: Extract meals from an HTML string (manual copy/paste)
 function extractMealsFromHtml(html) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, "text/html");
-  const bodies = doc.querySelectorAll(".card-body");
-
-  const meals = Array.from(bodies)
-    .map((body) => {
-      const nameEl =
-        body.querySelector("h4 span span") ||
-        body.querySelector("h4 span") ||
-        body.querySelector("h4");
-
-      const descEl =
-        body.querySelector(".card-text span span") ||
-        body.querySelector(".card-text span") ||
-        body.querySelector(".card-text");
-
-      const name = nameEl ? nameEl.textContent.trim() : "";
-      const description = descEl ? descEl.textContent.trim() : "";
-
-      return { name, description };
-    })
-    .filter((m) => m.name && m.description);
-
-  console.log("Extracted meals:", meals);
-  console.log("Total meals found:", meals.length);
+  const meals = extractMealsFromRoot(doc);
   return meals;
 }
 
@@ -89,9 +82,9 @@ const EXAMPLE_HTML = `<div class="container"><!---->
       </div>
       <div class="section-description"></div>
       <div class="menu-items card-group">
-        <div id="menu-item-13562-5" class=""><!---->
+        <div id="menu-item-13562-5" class="card meal-card"><!---->
           <div class="card-header" style="position: relative;">
-            <div class=""><!----><img src="https://cdn.filestackcontent.com/resize=width:640/hKP2UwnQTGDXV8B4Tg6c"
+            <div class="meal-card__image"><!----><img src="https://cdn.filestackcontent.com/resize=width:640/hKP2UwnQTGDXV8B4Tg6c"
                 class="img-fluid">
               <div style="position: absolute; bottom: 0px; right: 0px;">
                 <div class="sentiment-buttons has-selection no-note"><button class="like-btn selected"
@@ -160,9 +153,9 @@ const EXAMPLE_HTML = `<div class="container"><!---->
             </div>
           </div><!---->
         </div>
-        <div id="menu-item-13562-4" class=""><!---->
+        <div id="menu-item-13562-4" class="card meal-card"><!---->
           <div class="card-header" style="position: relative;">
-            <div class=""><!----><img src="https://cdn.filestackcontent.com/resize=width:640/cHjtbVYNRkaNQsq8CIlF"
+            <div class="meal-card__image"><!----><img src="https://cdn.filestackcontent.com/resize=width:640/cHjtbVYNRkaNQsq8CIlF"
                 class="img-fluid">
               <div style="position: absolute; bottom: 0px; right: 0px;">
                 <div class="sentiment-buttons no-selection no-note"><button class="like-btn not-selected"
@@ -228,9 +221,9 @@ const EXAMPLE_HTML = `<div class="container"><!---->
       </div>
       <div class="section-description"> </div>
       <div class="menu-items card-group">
-        <div id="menu-item-13562-2" class=""><!---->
+        <div id="menu-item-13562-2" class="card meal-card"><!---->
           <div class="card-header" style="position: relative;">
-            <div class=""><!----><img src="https://cdn.filestackcontent.com/resize=width:640/pyn1jMJmQnq8Lt54uLAC"
+            <div class="meal-card__image"><!----><img src="https://cdn.filestackcontent.com/resize=width:640/pyn1jMJmQnq8Lt54uLAC"
                 class="img-fluid">
               <div style="position: absolute; bottom: 0px; right: 0px;">
                 <div class="sentiment-buttons no-selection no-note"><button class="like-btn not-selected"
@@ -290,9 +283,9 @@ const EXAMPLE_HTML = `<div class="container"><!---->
             </div>
           </div><!---->
         </div>
-        <div id="menu-item-13562-3" class=""><!---->
+        <div id="menu-item-13562-3" class="card meal-card"><!---->
           <div class="card-header" style="position: relative;">
-            <div class=""><!----><img src="https://cdn.filestackcontent.com/resize=width:640/uT4Vh6ZxT7CdrUorkxos"
+            <div class="meal-card__image"><!----><img src="https://cdn.filestackcontent.com/resize=width:640/uT4Vh6ZxT7CdrUorkxos"
                 class="img-fluid">
               <div style="position: absolute; bottom: 0px; right: 0px;">
                 <div class="sentiment-buttons no-selection no-note"><button class="like-btn not-selected"
