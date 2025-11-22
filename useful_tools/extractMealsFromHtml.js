@@ -1,20 +1,31 @@
 /**
  * @file
+ *
+ * DISCLAIMER:
+ * This tool extracts meal names, descriptions, and dietary tags from Forkable.
+ * Forkable does NOT provide explicit calorie, sodium, or other nutritional information,
+ * or comprehensive ingredient lists.
+ * If you use AI to analyze these meals for nutritional content, be aware that AI can be wrong.
+ * Always verify nutritional information if it's critical for your dietary needs.
+ *
  * INSTRUCTIONS - METHOD 1 (RECOMMENDED - EASY):
  * 1. Open the Forkable meals page in your browser.
  * 2. Open the Chrome console (F12 or right-click > Inspect > Console).
  * 3. Paste this entire script and press Enter.
  * 4. Run: extractMealsFromPage()
  * 5. Copy the JS object output after "Extracted meals:" right-click > Copy object.
- * 6. Paste the JSON output into an LLM chat to ask for specific kinds of meals (low calorie, low sodium, etc).
+ * 6. Paste the JSON output into an LLM chat to ask for specific kinds of meals (low calorie,
+ *    low sodium, etc).
  *
  * INSTRUCTIONS - METHOD 2 (MANUAL):
- * 1. Inspect the HTML page and find `<div class="container">` with first child like `<div id="menu_favorite-1090150">`.
+ * 1. Inspect the HTML page and find `<div class="container">` with first child like
+ *    `<div id="menu_favorite-1090150">`.
  * 2. Right click on it and do Copy > Copy Element.
  * 3. Copy the HTML into the `COPIED_HTML` variable below.
  * 4. Paste this script into the Chrome console and press Enter.
  * 5. Copy the JS object output after "Extracted meals:" right-click > Copy object.
- * 6. Paste the JSON output into an LLM chat to ask for specific kinds of meals (low calorie, low sodium, etc).
+ * 6. Paste the JSON output into an LLM chat to ask for specific kinds of meals (low calorie,
+ *    low sodium, etc).
  */
 
 // Helper function to extract meals from a root element
