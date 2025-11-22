@@ -71,6 +71,8 @@ function extractMealsFromHtml(html) {
     })
     .filter((m) => m.name && m.description);
 
+  console.log("Extracted meals:", meals);
+  console.log("Total meals found:", meals.length);
   return meals;
 }
 
